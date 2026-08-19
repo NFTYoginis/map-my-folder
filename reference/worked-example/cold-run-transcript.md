@@ -1,10 +1,19 @@
 # Cold-run gate — transcript
 
-Three runs of one question against the shipped map, in two configurations, on `claude-opus-5`,
-in sessions with **no**
-memory, no project instructions and no coaching: the system prompt names two folders and offers a
-`list_dir` (free) and a `read_file` (metered). **A hop is a file opened.** Runner:
-`reference/checks/cold-run.py`.
+Three runs of one question against the shipped map, in two configurations, on `claude-opus-5`, in
+sessions with **no** memory, no project instructions and no coaching: the system prompt names two
+folders and offers a `list_dir` (free) and a `read_file` (metered). **A hop is a file opened** — which is why the gate row below reads *one*, not two: in the
+reading walk the catalog is step one whether or not reaching it costs an open, and here it is
+already in the project.
+
+Runner: `reference/checks/cold-run.py`, and **the configuration is a flag on it** —
+
+| Configuration | Command |
+|---|---|
+| catalog in the project — what the README tells a reader to load | `CATALOG_IN_CONTEXT=1 QUESTION="…" TERRITORY_DIR=… python3 reference/checks/cold-run.py` |
+| no framing at all — the session must find the map itself | same line without `CATALOG_IN_CONTEXT` |
+
+Both numbers below are real. They answer different questions, so every row names its flag.
 
 > **What is Services?**
 
@@ -114,13 +123,13 @@ itself: *"That was one catalog plus one card — the budget for an answer."*
 
 ---
 
-## What the two runs together establish
+## What the three runs together establish
 
-| | Reads | Territory files opened | Landed on card 04 | Stopped |
-|---|---|---|---|---|
-| Gate run (catalog loaded) | 1 | 0 | yes | yes |
-| No framing, before the fix | 4 | 2 | no — never found the catalog | yes |
-| No framing, after the fix | 4 | 0 | yes | yes |
+| Run | `CATALOG_IN_CONTEXT` | Reads | Territory files opened | Landed on card 04 | Stopped |
+|---|---|---|---|---|---|
+| Gate run (catalog loaded) | `1` | 1 | 0 | yes | yes |
+| No framing, before the fix | unset | 4 | 2 | no — never found the catalog | yes |
+| No framing, after the fix | unset | 4 | 0 | yes | yes |
 
 The gate is the first row. The other two are why the door exists.
 

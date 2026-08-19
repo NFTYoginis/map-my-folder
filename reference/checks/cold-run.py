@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
 """Cold-run gate — one question, one fresh session, no memory and no coaching.
 
-Run it against any map. Set MAP and TERRITORY to the two folders and QUESTION to the thing a reader
-would actually ask. A hop is a file opened; `list_dir` is free, as a project file listing is.
+Run it against any map. Set MAP_DIR and TERRITORY_DIR to the two folders and QUESTION to the thing a
+reader would actually ask. A hop is a file opened; `list_dir` is free, as a project file listing is.
+
+**CATALOG_IN_CONTEXT=1 puts the map's catalog in the project** — the configuration the README tells a
+reader of an existing map to load, and the one the "catalog + one card" claim is measured in. Without
+it the session gets no framing at all and has to find the map itself, which costs more reads. Both
+numbers are real; they are answers to different questions, so always report which flag was set.
 
 Needs `pip install anthropic` and ANTHROPIC_API_KEY. Transcript prints as JSON on stdout.
 
 Fresh session, no memory, no project instructions, no coaching. The model gets two folders (the map
 and the repository it maps) behind a free `list_dir` and a metered `read_file`, and one question.
 
-Pass = the answer is correct, it opened at most two files, and it stopped.
+Pass depends on the configuration you ran, so record the flag with the number: with
+CATALOG_IN_CONTEXT=1 the budget is the catalog (already in the project) plus ONE card opened;
+unframed, the session must also find the map, so expect more. In both, the answer must be
+correct, no territory file should be opened for an identification question, and it must stop.
 """
 
 import json
@@ -24,14 +32,43 @@ QUESTION = os.environ.get("QUESTION", "What is Services?")
 
 ROOTS = {"map": MAP, "repo": TERRITORY}
 
-SYSTEM = (
-    "You are in a fresh session. You have no memory of any previous conversation and no notes.\n\n"
-    "Two folders are available to you through tools:\n"
-    f"  map  — {MAP}\n"
-    f"  repo — {TERRITORY}\n\n"
-    "Use `list_dir` to see what is there and `read_file` to read something. Answer the user's "
-    "question."
-)
+# Two configurations, and the difference is the whole point of the gate.
+#   unset            → UNFRAMED: the session sees two folder names and must find its own way in.
+#   CATALOG_IN_CONTEXT=1  → the map's catalog is in the project, which is what the README tells a
+#                      reader of an existing map to load. Set it to a path to use a different
+#                      catalog (absolute, or relative to MAP).
+_CIC = os.environ.get("CATALOG_IN_CONTEXT", "").strip()
+CATALOG_IN_CONTEXT = _CIC not in ("", "0", "false", "False", "no")
+CATALOG_PATH = ""
+if CATALOG_IN_CONTEXT:
+    rel = "reference/worked-example/CATALOG.md" if _CIC in ("1", "true", "True", "yes") else _CIC
+    CATALOG_PATH = rel if os.path.isabs(rel) else os.path.join(MAP, rel)
+    if not os.path.isfile(CATALOG_PATH):
+        sys.exit(f"CATALOG_IN_CONTEXT set but no catalog at {CATALOG_PATH}")
+
+if CATALOG_IN_CONTEXT:
+    with open(CATALOG_PATH, encoding="utf-8") as _fh:
+        _CATALOG = _fh.read()
+    SYSTEM = (
+        "You are in a fresh session. You have no memory of any previous conversation and no notes.\n\n"
+        "Your project contains one file, a map of a repository. It is reproduced below.\n\n"
+        "Two folders are also available to you through tools:\n"
+        f"  map  — {MAP}   (the map folder; the catalog below lives at "
+        f"{os.path.relpath(os.path.dirname(CATALOG_PATH), MAP)}/)\n"
+        f"  repo — {TERRITORY}   (the repository the map describes)\n\n"
+        "Use `list_dir` to see what is there and `read_file` to read something. Answer the user's "
+        "question.\n\n"
+        "--- CATALOG.md ---\n" + _CATALOG
+    )
+else:
+    SYSTEM = (
+        "You are in a fresh session. You have no memory of any previous conversation and no notes.\n\n"
+        "Two folders are available to you through tools:\n"
+        f"  map  — {MAP}\n"
+        f"  repo — {TERRITORY}\n\n"
+        "Use `list_dir` to see what is there and `read_file` to read something. Answer the user's "
+        "question."
+    )
 
 TOOLS = [
     {
@@ -151,6 +188,8 @@ def main():
     out = {
         "question": QUESTION,
         "model": "claude-opus-5",
+        "catalog_in_context": CATALOG_IN_CONTEXT,
+        "catalog_path": CATALOG_PATH or None,
         "file_reads": reads,
         "listings": listings,
         "hops": len(reads),

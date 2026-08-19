@@ -93,7 +93,15 @@ The transcript is not decoration. The first cold run failed — it never found t
 re-deriving the map from the territory — and that failure is why `README.md`, `identity.md` and
 `rules.md` now open with a line telling a reader which walk they are on. Re-run it yourself with
 [`reference/checks/cold-run.py`](reference/checks/cold-run.py) (`pip install anthropic`, set
-`TERRITORY_DIR` and `QUESTION`).
+`TERRITORY_DIR` and `QUESTION`):
+
+    CATALOG_IN_CONTEXT=1 TERRITORY_DIR=./your-market-realtor QUESTION="What is Services?" \
+        python3 reference/checks/cold-run.py
+
+**`CATALOG_IN_CONTEXT=1` is the flag that matters.** It puts the catalog in the project — the
+configuration this README tells a reader of an existing map to load, and the one the two-hop number
+is measured in. Drop the flag and the session gets no framing at all: it has to find the map first,
+which costs more reads. Both are real; always say which you ran.
 
 To re-run the checks yourself, clone the territory and point the script at it:
 
