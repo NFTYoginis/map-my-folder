@@ -216,19 +216,47 @@ body > .tqai-strip .tqai-strip-in{padding:0 22px}
 
 <section id="watch"><div class="wrap">
   <h2>Watch a folder get mapped.</h2>
-  <p class="lede">One real repository, eight named stages, no narration of theory: enumerate, find
-  the repeating unit, classify, date every verdict with the command that decided it — then answer a
-  question and stop.</p>
+  <p class="lede">One real repository, eight named stages: enumerate, find the repeating unit,
+  classify, date every verdict with the command that decided it — then answer a question and
+  stop.</p>
 
-  <!-- TODO: operator — drop the finished film in as docs/process.mp4 (+ docs/video-poster.jpg) and
-       replace the <div class="plate"> block below, verbatim, with:
+  <!-- TODO: operator — the film is CUT and waiting on a voice pass; the drop is the operator's call.
+       When it fires, copy two files in and replace the <div class="plate"> block below, verbatim,
+       with the <video> element beneath. Rehearsed locally against the real render, so this is
+       mechanical: the element inherits video.plate's 16/9 box, the poster fills it, and light, dark
+       and 390px all hold.
 
-       <video class="plate" controls preload="none" poster="video-poster.jpg" width="1280" height="720">
+         cp <animation>/output/map-my-folder-process.mp4        docs/process.mp4
+         cp <animation>/output/map-my-folder-process-poster.jpg docs/video-poster.jpg
+
+       (map-my-folder-process-cover.jpg needs no copy — it is frame 0, already embedded in the mp4
+       as attached_pic, which is what a messenger grabs as the share thumbnail.)
+
+       <video class="plate" controls playsinline preload="none" poster="video-poster.jpg"
+              width="1920" height="1080">
          <source src="process.mp4" type="video/mp4">
          <p>Your browser cannot play this file. <a href="process.mp4">Download it</a>.</p>
        </video>
 
-       Until then the storyboard below stands on its own — it is the shot list, not a fake player. -->
+       Replace the <p class="cap"> under it too — it describes a storyboard that will no longer be
+       there. Suggested, and true of the film as cut:
+         <p class="cap">Eight stages, the real artifact of each on screen.</p>
+
+       If the voiced cut ships a .vtt, copy it to docs/process.vtt and uncomment this line inside
+       the <video>, above the </video>:
+         <track kind="captions" src="process.vtt" srclang="en" label="English" default>
+
+       ⛔ And re-read the heading block above before pushing. It said "no narration of theory" until
+       2026-08-19; that clause was removed rather than left to be judged on drop day, because a
+       narrated film was about to sit directly beneath it. If the VO ever grows past speaking the
+       on-screen headline, this block is the first thing that goes stale.
+
+       Then: the film is the only thing on this page loading from anywhere, and it loads from here —
+       re-check that `grep -oE "https?://" docs/index.html` still returns only GitHub and the site's
+       own absolute og: URLs, and that served bytes match disk after the push.
+
+       Until it fires the storyboard below stands on its own — it is the shot list, not a fake
+       player. -->
 
   <div class="plate">
     <div class="shot">
@@ -253,8 +281,9 @@ body > .tqai-strip .tqai-strip-in{padding:0 22px}
       gets opened.</p>
     </div>
   </div>
-  <p class="cap">Storyboard for the process film — commissioned, not yet cut. The shot list is the
-  same walk the instrument runs.</p>
+  <p class="cap">Storyboard for the process film — shot and cut; a voice pass is being added before
+  it lands here. These three panels condense its eight stages, which are the walk the instrument
+  runs.</p>
 </div></section>
 
 <section id="types"><div class="wrap">
