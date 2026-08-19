@@ -107,6 +107,7 @@ def main():
     print(f"cards      {len(cards)}   run limit  {RUN} chars\n")
 
     failures = []
+    tripped = set()
     print(f"{'card':<28} {'bytes':>7}  {'A cites':>9}  {'A':<7} {'B':<7} {'C':<7} {'D':<7}")
     print("-" * 80)
 
@@ -130,18 +131,18 @@ def main():
             a_state, a_size = "SKIP", 0
         elif source_tok is None:
             a_state, a_size = "FAIL", 0
-            failures.append(f"{name}: no **Source path:** line")
+            failures.append(f"{name}: no **Source path:** line"); tripped.add("C")
         else:
             src = expand(territory, source_tok)
             a_size = size_of(src)
             if not src:
                 a_state = "FAIL"
-                failures.append(f"{name}: Source path does not resolve: {source_tok}")
+                failures.append(f"{name}: Source path does not resolve: {source_tok}"); tripped.add("C")
             elif nbytes < a_size:
                 a_state = "pass"
             else:
                 a_state = "FAIL"
-                failures.append(f"{name}: {nbytes} B card >= {a_size} B cited ({source_tok})")
+                failures.append(f"{name}: {nbytes} B card >= {a_size} B cited ({source_tok})"); tripped.add("A")
 
         # B — no shared run longer than RUN characters
         if not have_territory:
@@ -154,16 +155,17 @@ def main():
                     b_state = "FAIL"
                     failures.append(f"{name}: {RUN}+ char run shared with {os.path.relpath(f, territory)}: "
                                     f"{hit[:60]!r}…")
+                    tripped.add("B")
                     break
 
         if not c_ok:
-            failures.append(f"{name}: cites no path that resolves in the territory")
+            failures.append(f"{name}: cites no path that resolves in the territory"); tripped.add("C")
 
         # D — the three lines a card may not ship without
         missing = [r for r in REQUIRED if f"**{r}**" not in text]
         d_ok = not missing
         if missing:
-            failures.append(f"{name}: missing required line(s): {', '.join(m.rstrip(':') for m in missing)}")
+            failures.append(f"{name}: missing required line(s): {', '.join(m.rstrip(':') for m in missing)}"); tripped.add("D")
 
         print(f"{name:<28} {nbytes:>7}  {a_size:>9}  {a_state:<7} {b_state:<7} "
               f"{'pass' if c_ok else 'FAIL':<7} {'pass' if d_ok else 'FAIL':<7}")
@@ -173,7 +175,19 @@ def main():
         print(f"\nFAILED — {len(failures)} finding(s):")
         for f in failures:
             print(f"  · {f}")
-        print("\nA card that fails A or B is a photocopy: cite the file instead of restating it.")
+        # Name the fix for the checks that actually tripped. A single trailer sends the reader to
+        # the wrong repair whenever the failure was C or D.
+        guidance = {
+            "A": "A — the card is not smaller than what it cites: cite the file instead of restating it.",
+            "B": f"B — a run over {RUN} characters is shared verbatim with a cited file: that is a "
+                 "photocopy, quote less and point more.",
+            "C": "C — a cited path is missing or does not resolve in the territory: fix the path, or add "
+                 "the **Source path:** line. A card pointing at nothing cannot be checked against anything.",
+            "D": "D — a required line is missing: every card ships Hits, Does not hit and Done when.",
+        }
+        for key in ("A", "B", "C", "D"):
+            if key in tripped:
+                print(f"\n{guidance[key]}")
         return 1
     print("\nPASSED — every card is smaller than what it cites, shares no verbatim run over "
           f"{RUN} characters with it, cites at least one path that resolves, and carries Hits, "

@@ -54,6 +54,7 @@ Look the line up. Do not reason about it per card.
 |---|---|---|
 | **ENGINE** | every instance that reads it | immediately, in place |
 | **BLUEPRINT** | **future copies only** | never backwards |
+| ↳ *blueprint that is also a read-path* | + whatever reads it, now | derive each half from its own role |
 | **INSTANCE** | nothing — it is a leaf | — |
 | **SLOT** | every instance, present and future | wherever the machinery names it |
 | **MARKER** | whatever branches on it | at read time |

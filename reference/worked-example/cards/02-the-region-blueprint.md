@@ -17,7 +17,11 @@ path, in `case-studies/`, where the engine never looks.
 
 **Source path:** `specialist/reference/region/`
 
-**Hits:** future copies only. Edit it today and nothing that already exists changes.
+**Hits:** two things, because the folder has two roles — and only the first is the blueprint's.
+As a **blueprint**: future copies only; no case study on disk changes, ever. As the **engine's
+read-path**: the running specialist, immediately — `specialist/rules.md:27-33` routes `region/*.md`
+here and `:59` branches on what it finds, so an edit changes what a specialist answers for any
+market not yet populated over it. Derive each half from the role it belongs to; do not average them.
 
 **Does not hit:** the instance you would assume was closest to it. Per-file `grep -Fxf` against the
 blueprint: Khao Lak still shares 10–19 exact lines, Novato 1–13, Jerusalem 5–14 — but Lisbon, added

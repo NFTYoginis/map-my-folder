@@ -1,6 +1,7 @@
 # Cold-run gate — transcript
 
-Two runs of one question against the shipped map, on `claude-opus-5`, in sessions with **no**
+Three runs of one question against the shipped map, in two configurations, on `claude-opus-5`,
+in sessions with **no**
 memory, no project instructions and no coaching: the system prompt names two folders and offers a
 `list_dir` (free) and a `read_file` (metered). **A hop is a file opened.** Runner:
 `reference/checks/cold-run.py`.
