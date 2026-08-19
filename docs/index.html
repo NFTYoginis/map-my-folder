@@ -220,70 +220,26 @@ body > .tqai-strip .tqai-strip-in{padding:0 22px}
   classify, date every verdict with the command that decided it — then answer a question and
   stop.</p>
 
-  <!-- TODO: operator — the film is CUT and waiting on a voice pass; the drop is the operator's call.
-       When it fires, copy two files in and replace the <div class="plate"> block below, verbatim,
-       with the <video> element beneath. Rehearsed locally against the real render, so this is
-       mechanical: the element inherits video.plate's 16/9 box, the poster fills it, and light, dark
-       and 390px all hold.
+  <!-- The film dropped 2026-08-19. Three files, all served from this repo: process.mp4 (voiced,
+       8,177,375 B), video-poster.jpg (a stage-8 frame — the card open, ledger 1/0, territory dark),
+       process.vtt (18 cues). The frame-0 cover is embedded in the mp4 as attached_pic, which is what
+       a messenger grabs as the share thumbnail, so it is not a separate file here.
 
-         cp <animation>/output/map-my-folder-process.mp4        docs/process.mp4
-         cp <animation>/output/map-my-folder-process-poster.jpg docs/video-poster.jpg
+       The silent master is kept in the video worker's tree, not this repo, and is protected there —
+       it is the artifact to re-mux from, not this one.
 
-       (map-my-folder-process-cover.jpg needs no copy — it is frame 0, already embedded in the mp4
-       as attached_pic, which is what a messenger grabs as the share thumbnail.)
+       Every cue is its beat's on-screen headline, verbatim. If a future VO ever says more than the
+       screen does, the heading block above goes stale first: it lost the clause "no narration of
+       theory" on 2026-08-19 precisely so that a narrated film could sit under it honestly. -->
 
-       <video class="plate" controls playsinline preload="none" poster="video-poster.jpg"
-              width="1920" height="1080">
-         <source src="process.mp4" type="video/mp4">
-         <p>Your browser cannot play this file. <a href="process.mp4">Download it</a>.</p>
-       </video>
-
-       Replace the <p class="cap"> under it too — it describes a storyboard that will no longer be
-       there. Suggested, and true of the film as cut:
-         <p class="cap">Eight stages, the real artifact of each on screen.</p>
-
-       If the voiced cut ships a .vtt, copy it to docs/process.vtt and uncomment this line inside
-       the <video>, above the </video>:
-         <track kind="captions" src="process.vtt" srclang="en" label="English" default>
-
-       ⛔ And re-read the heading block above before pushing. It said "no narration of theory" until
-       2026-08-19; that clause was removed rather than left to be judged on drop day, because a
-       narrated film was about to sit directly beneath it. If the VO ever grows past speaking the
-       on-screen headline, this block is the first thing that goes stale.
-
-       Then: the film is the only thing on this page loading from anywhere, and it loads from here —
-       re-check that `grep -oE "https?://" docs/index.html` still returns only GitHub and the site's
-       own absolute og: URLs, and that served bytes match disk after the push.
-
-       Until it fires the storyboard below stands on its own — it is the shot list, not a fake
-       player. -->
-
-  <div class="plate">
-    <div class="shot">
-      <span class="n">01</span>
-      <b>Enumerate. Nothing opened.</b>
-      <code>find . -type f | xargs stat</code>
-      <p>Paths and sizes first. The repeating unit is visible in the listing — same six filenames
-      under four different parents — before a single file is read.</p>
-    </div>
-    <div class="shot">
-      <span class="n">02</span>
-      <b>Classify, then date it.</b>
-      <code>grep -Fxf blueprint instance</code>
-      <p>Seven type tests, first pass wins. Then the state axis, and the verdict travels with the
-      command that decided it. Copy or reference — they look identical from outside.</p>
-    </div>
-    <div class="shot">
-      <span class="n">03</span>
-      <b>Ask it something. Watch it stop.</b>
-      <code>“What is Services?”</code>
-      <p>Catalog, one card, done. The interesting part of the film is the part where nothing else
-      gets opened.</p>
-    </div>
-  </div>
-  <p class="cap">Storyboard for the process film — shot and cut; a voice pass is being added before
-  it lands here. These three panels condense its eight stages, which are the walk the instrument
-  runs.</p>
+  <video class="plate" controls playsinline preload="none" poster="video-poster.jpg"
+         width="1920" height="1080">
+    <source src="process.mp4" type="video/mp4">
+    <track kind="captions" src="process.vtt" srclang="en" label="English" default>
+    <p>Your browser cannot play this file. <a href="process.mp4">Download it</a>.</p>
+  </video>
+  <p class="cap">Eight stages, the real artifact of each on screen. Captions carry the
+  spoken track, which speaks each stage's on-screen headline and nothing else.</p>
 </div></section>
 
 <section id="types"><div class="wrap">
