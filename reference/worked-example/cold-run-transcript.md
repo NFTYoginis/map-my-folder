@@ -1,10 +1,12 @@
 # Cold-run gate — transcript
 
-Three runs of one question against the shipped map, in two configurations, on `claude-opus-5`, in
-sessions with **no** memory, no project instructions and no coaching: the system prompt names two
-folders and offers a `list_dir` (free) and a `read_file` (metered). **A hop is a file opened** — which is why the gate row below reads *one*, not two: in the
-reading walk the catalog is step one whether or not reaching it costs an open, and here it is
-already in the project.
+**Three transcripts, two configurations** — and the gate row repeated to **n = 5**, since a claim
+measured once is an anecdote. One question against the shipped map, on `claude-opus-5`, in sessions
+with **no** memory, no project instructions and no coaching: the system prompt names two
+folders and offers a `list_dir` (free) and a `read_file` (metered). **A hop is a file opened.** That is why the gate row below reads *one*, not two: the reading walk's
+"catalog, then one card" is two hops only when opening the catalog is one of them, and here the
+catalog is already in the project, so it costs no open. Walk *steps* and metered *hops* are the same
+number only in the unframed case — do not restate one as the other.
 
 Runner: `reference/checks/cold-run.py`, and **the configuration is a flag on it** —
 
@@ -24,7 +26,13 @@ Both numbers below are real. They answer different questions, so every row names
 `README.md` tells a reader of an existing map to load its `CATALOG.md` and nothing else. So: the
 catalog is in the project, everything else is behind the read tool.
 
-**Result: PASS — 1 file opened, then stop.** Catalog + one card = two hops.
+**Result: PASS — one file opened, then stop.** Run repeatedly rather than once: **n = 5 on the
+shipped command** (4 independent, research-claude; 1 builder reproduction) — **4 × 1 read / 0
+territory files**, and **1 × 2 reads / 1 territory file**
+(`case-studies/lisbon-portugal/region/services.md`, an instance opened to look at a filled example).
+**All five landed on card 04 and all five stopped**, which is what the claim is: not a fixed
+file-count, but the card it reaches and the fact that it ends. A single run that comes back 2/1 is
+inside the spread, not a contradiction.
 
 ```
 turn 0  stop_reason=tool_use  in=1842 out=278
@@ -123,11 +131,11 @@ itself: *"That was one catalog plus one card — the budget for an answer."*
 
 ---
 
-## What the three runs together establish
+## What the transcripts together establish
 
 | Run | `CATALOG_IN_CONTEXT` | Reads | Territory files opened | Landed on card 04 | Stopped |
 |---|---|---|---|---|---|
-| Gate run (catalog loaded) | `1` | 1 | 0 | yes | yes |
+| Gate run (catalog loaded), n=5 | `1` | 1 ×4, 2 ×1 | 0 ×4, 1 ×1 | yes, 5/5 | yes, 5/5 |
 | No framing, before the fix | unset | 4 | 2 | no — never found the catalog | yes |
 | No framing, after the fix | unset | 4 | 0 | yes | yes |
 

@@ -107,6 +107,18 @@ And the line that governs both artifacts:
 
 > **If a card and the file disagree, the file wins and the card is wrong.**
 
+- [ ] **Pre-ship count sweep.** Grep every surface — cards, catalog, notes, README, landing page,
+      scripts, their docstrings — for counts, and check each one **twice**: against every other
+      statement of it, *and against its own definition*. A count is allowed to appear once, where it
+      is derived; everywhere else, name the thing instead of the number.
+
+      grep -rnoiE "\b(one|two|three|[0-9]{1,3}) (runs?|cards?|files?|hops?|reads?|types?|steps?)\b" .
+
+      This build produced **six** defects of that class and every one read as helpful in isolation:
+      a summary restating a card's own count, a heading left over from an earlier count, a page
+      quoting a number in a different unit than the log defined, a term used in the sentence after
+      the one defining it. **The sweep is cheap and the habit is not reliable — run the grep.**
+
 Say it on the map, not just here. A map that is trusted over its territory has stopped being a map.
 
 ## Refusal 2 — no slurping

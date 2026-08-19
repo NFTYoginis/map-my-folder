@@ -45,7 +45,7 @@ worked example is a sample of output, not payload.
 |---|---|
 | A map of your folder | `Map ~/code/whatever. Start with the enumeration; don't open anything yet.` |
 | To know if it is even mappable | `Run the territory check on ~/code/whatever and stop.` |
-| To read the shipped example | `What is Services?` — then check that it stopped after two hops |
+| To read the shipped example | `What is Services?` — then check that it opened **one card** and stopped |
 | To check a map you already have | `python3 reference/checks/refusal-checks.py --map <map-dir> --territory <folder>` |
 
 ## What it is
