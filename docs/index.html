@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map My Folder — a map your folder's next reader can act on</title>
+<meta name="description" content="An instrument you drop into a Claude Project and point at your own folder. Seven card types, a separate state axis, two walks, two refusals — and a worked map of a real repo.">
+<meta property="og:title" content="Map My Folder">
+<meta property="og:description" content="A map of your folder, for the reader who arrives with no memory. Catalog, then one card. Never the whole folder.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nftyoginis.github.io/map-my-folder/">
+<meta property="og:image" content="https://nftyoginis.github.io/map-my-folder/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://nftyoginis.github.io/map-my-folder/og-image.png">
+<style>
+  :root{
+    --paper:#f5f2ec; --sheet:#fffdf8; --ink:#17140f; --ink2:#4a443b; --ink3:#7b7365;
+    --rule:#dcd5c7; --signal:#b4491f; --cool:#3c5763; --wash:#eae4d7;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --serif:ui-serif,Georgia,"Iowan Old Style","Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#14120f; --sheet:#1c1915; --ink:#ede8de; --ink2:#a89f90; --ink3:#7d7466;
+      --rule:#302b24; --signal:#e0764a; --cool:#86a9b6; --wash:#221e19;
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+       font-size:16.5px;line-height:1.62;letter-spacing:-.002em}
+  a{color:var(--signal);text-decoration:none;border-bottom:1px solid rgba(180,73,31,.3)}
+  a:hover{border-bottom-color:var(--signal)}
+  code,kbd{font-family:var(--mono);font-size:.86em}
+  .wrap{max-width:940px;margin:0 auto;padding:0 22px}
+
+  /* --- rulers: the page is a survey sheet --- */
+  nav{position:sticky;top:0;z-index:9;background:var(--paper);
+      background:color-mix(in srgb,var(--paper) 92%,transparent);
+      backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+  nav .wrap{display:flex;align-items:baseline;gap:26px;height:50px;font-family:var(--mono);
+            font-size:11.5px;letter-spacing:.09em;text-transform:uppercase}
+  nav b{font-family:var(--sans);font-size:13px;letter-spacing:.01em;text-transform:none;
+        font-weight:650;margin-right:auto}
+  nav a{color:var(--ink2);border:0}
+  nav a:hover{color:var(--signal)}
+  @media(max-width:720px){nav .x{display:none}}
+
+  header{position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+  header::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      repeating-linear-gradient(0deg,var(--rule) 0 1px,transparent 1px 26px),
+      repeating-linear-gradient(90deg,var(--rule) 0 1px,transparent 1px 26px);
+    opacity:.5;
+    mask-image:radial-gradient(120% 90% at 18% 0%,#000 0%,transparent 72%);
+    -webkit-mask-image:radial-gradient(120% 90% at 18% 0%,#000 0%,transparent 72%)}
+  header .wrap{position:relative;padding:76px 22px 66px}
+  .tag{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+       color:var(--signal)}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(2.1rem,5.6vw,3.5rem);line-height:1.06;
+     letter-spacing:-.02em;margin:.5rem 0 0;max-width:22ch}
+  .sub{font-size:1.13rem;color:var(--ink2);max-width:60ch;margin:1.1rem 0 0}
+  .rule-note{margin:2.2rem 0 0;padding:16px 20px;background:var(--sheet);
+             border:1px solid var(--rule);border-left:3px solid var(--signal);max-width:62ch}
+  .rule-note b{font-family:var(--serif);font-size:1.08rem}
+  .rule-note p{margin:.45rem 0 0;font-size:.94rem;color:var(--ink2)}
+
+  section{padding:60px 0;border-bottom:1px solid var(--rule)}
+  h2{font-family:var(--serif);font-weight:500;font-size:1.62rem;letter-spacing:-.015em;margin:0 0 .3rem}
+  .lede{color:var(--ink2);margin:0 0 1.7rem;max-width:66ch}
+  h3{font-size:.78rem;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;
+     color:var(--ink3);margin:2rem 0 .6rem}
+
+  .tbl{width:100%;border-collapse:collapse;font-size:.93rem}
+  .tbl th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+          text-transform:uppercase;color:var(--ink3);font-weight:400;
+          padding:0 12px 8px 0;border-bottom:1px solid var(--rule)}
+  .tbl td{padding:11px 12px 11px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+  .tbl td:first-child{font-family:var(--mono);font-size:.82rem;letter-spacing:.05em;
+                      color:var(--signal);white-space:nowrap}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+  .panel{background:var(--sheet);border:1px solid var(--rule);padding:20px 22px}
+  .panel h4{margin:0 0 .1rem;font-family:var(--serif);font-weight:500;font-size:1.12rem}
+  .panel .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+            color:var(--ink3)}
+  ol.steps{margin:.9rem 0 0;padding-left:1.35rem;font-size:.93rem}
+  ol.steps li{margin:.34rem 0}
+  ol.steps li::marker{font-family:var(--mono);color:var(--signal);font-size:.85em}
+  .stop{font-family:var(--mono);font-size:.8rem;color:var(--signal);margin:.9rem 0 0;
+        letter-spacing:.04em}
+
+  /* --- the card component mirrors a real card --- */
+  .card{background:var(--sheet);border:1px solid var(--rule);border-top:3px solid var(--cool);
+        padding:22px 24px}
+  .card .hd{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+            border-bottom:1px solid var(--rule);padding-bottom:11px;margin-bottom:14px}
+  .card .hd b{font-family:var(--serif);font-weight:500;font-size:1.22rem}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+        border:1px solid var(--rule);padding:2px 7px;color:var(--ink2);white-space:nowrap}
+  .pill.live{color:var(--cool);border-color:var(--cool)}
+  .pill.ghost{color:var(--signal);border-color:var(--signal)}
+  .card dl{margin:0;display:grid;grid-template-columns:minmax(96px,auto) 1fr;gap:8px 16px;
+           font-size:.92rem}
+  .card dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+           color:var(--ink3);padding-top:.28rem}
+  .card dd{margin:0}
+  @media(max-width:620px){.card dl{grid-template-columns:1fr}.card dt{padding-top:.5rem}}
+
+  pre{background:var(--wash);border:1px solid var(--rule);padding:15px 17px;overflow-x:auto;
+      font-family:var(--mono);font-size:12.2px;line-height:1.55;margin:0}
+  pre b{color:var(--signal);font-weight:600}
+  pre i{color:var(--cool);font-style:normal}
+
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);
+        border:1px solid var(--rule)}
+  @media(max-width:700px){.nums{grid-template-columns:repeat(2,1fr)}}
+  .nums div{background:var(--paper);padding:16px 18px}
+  .nums span{display:block;font-family:var(--serif);font-size:1.9rem;line-height:1;
+             letter-spacing:-.02em}
+  .nums small{display:block;margin-top:.35rem;font-family:var(--mono);font-size:10.5px;
+              letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+
+  /* --- the film plate: a 16:9 slab that becomes a <video> when the film lands --- */
+  .plate{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);
+         border:1px solid var(--rule);width:100%;max-width:100%;position:relative;
+         aspect-ratio:16/9;overflow:hidden}
+  video.plate{display:block;aspect-ratio:16/9;height:auto;background:var(--wash)}
+  .plate .shot{background:var(--sheet);padding:22px 20px;display:flex;flex-direction:column;
+               justify-content:flex-end;position:relative;overflow:hidden}
+  .plate .shot::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,var(--rule) 0 1px,transparent 1px 22px),
+               repeating-linear-gradient(90deg,var(--rule) 0 1px,transparent 1px 22px);
+    opacity:.4;mask-image:linear-gradient(180deg,#000 0%,#000 34%,transparent 74%);
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 34%,transparent 74%)}
+  .plate .n{position:absolute;top:20px;left:20px;font-family:var(--mono);font-size:10.5px;
+            letter-spacing:.14em;color:var(--signal);z-index:1}
+  .plate b{font-family:var(--serif);font-weight:500;font-size:1.14rem;margin:.35rem 0 .5rem;
+           line-height:1.25}
+  .plate code{font-size:11.5px;color:var(--cool);display:block;margin-bottom:.6rem;
+              word-break:break-word}
+  .plate p{margin:0;font-size:.88rem;color:var(--ink2);line-height:1.5}
+  .cap{margin:.75rem 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.05em;
+       color:var(--ink3)}
+  @media(max-width:760px){
+    .plate{grid-template-columns:1fr;aspect-ratio:auto}
+    .plate .shot::after{display:none}
+  }
+
+  ul.plain{list-style:none;padding:0;margin:0}
+  ul.plain li{padding:11px 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+  ul.plain li:last-child{border:0}
+  ul.plain b{font-weight:600}
+  .no{color:var(--signal);font-family:var(--mono);font-size:.82rem;margin-right:.5rem}
+
+  footer{padding:44px 0 60px;font-size:.88rem;color:var(--ink2)}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:14px 30px;align-items:baseline}
+  footer .by{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+             text-transform:uppercase;color:var(--ink3)}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <b>Map My Folder</b>
+  <a href="#watch">watch</a>
+  <a class="x" href="#rule">the rule</a>
+  <a class="x" href="#types">types</a>
+  <a class="x" href="#state">state</a>
+  <a class="x" href="#walks">walks</a>
+  <a href="#card">a card</a>
+  <a href="#proof">checks</a>
+</div></nav>
+
+<header><div class="wrap">
+  <div class="tag">an instrument, not a document</div>
+  <h1>A map of your folder, for the reader who has no memory.</h1>
+  <p class="sub">Drop it into a Claude Project, point it at your own folder, and it produces a
+  catalog and a handful of cards — each one shorter than the file it points at. Its purpose is
+  narrow: let a later reader change <em>one thing</em> without reading everything.</p>
+  <div class="rule-note" id="rule">
+    <b>Load the catalog, then one card. Never the whole folder.</b>
+    <p>A map you have to read in full is a folder you have to read in full, with an extra step. If a
+    question needs a second card, the first card was mis-scoped — that is a defect in the map, not
+    permission to keep reading.</p>
+  </div>
+</div></header>
+
+<section id="watch"><div class="wrap">
+  <h2>Watch a folder get mapped.</h2>
+  <p class="lede">Three minutes, one real repository, no narration of theory: enumerate, classify and
+  date the state, then answer a question in two hops.</p>
+
+  <!-- TODO: operator — drop the finished film in as docs/process.mp4 (+ docs/video-poster.jpg) and
+       replace the <div class="plate"> block below, verbatim, with:
+
+       <video class="plate" controls preload="none" poster="video-poster.jpg" width="1280" height="720">
+         <source src="process.mp4" type="video/mp4">
+         <p>Your browser cannot play this file. <a href="process.mp4">Download it</a>.</p>
+       </video>
+
+       Until then the storyboard below stands on its own — it is the shot list, not a fake player. -->
+
+  <div class="plate">
+    <div class="shot">
+      <span class="n">01</span>
+      <b>Enumerate. Nothing opened.</b>
+      <code>find . -type f | xargs stat</code>
+      <p>Paths and sizes first. The repeating unit is visible in the listing — same six filenames
+      under four different parents — before a single file is read.</p>
+    </div>
+    <div class="shot">
+      <span class="n">02</span>
+      <b>Classify, then date it.</b>
+      <code>grep -Fxf blueprint instance</code>
+      <p>Seven type tests, first pass wins. Then the state axis, and the verdict travels with the
+      command that decided it. Copy or reference — they look identical from outside.</p>
+    </div>
+    <div class="shot">
+      <span class="n">03</span>
+      <b>Ask it something. Watch it stop.</b>
+      <code>“What is Services?”</code>
+      <p>Catalog, one card, done. The interesting part of the film is the part where nothing else
+      gets opened.</p>
+    </div>
+  </div>
+  <p class="cap">Storyboard for the process film — commissioned, not yet cut. The shot list is the
+  same walk the instrument runs.</p>
+</div></section>
+
+<section id="types"><div class="wrap">
+  <h2>Seven card types. A closed set, each with a proof test.</h2>
+  <p class="lede">Not adjectives — checks. A noun that fails all seven gets no card; it gets one line
+  in the notes. That refusal is what keeps a map smaller than its territory.</p>
+  <div class="scroll"><table class="tbl">
+    <thead><tr><th>Type</th><th>Proof test</th><th>What it hits</th></tr></thead>
+    <tbody>
+      <tr><td>ENGINE</td><td>Two or more instances read it. Change it and all their behavior changes.</td><td>every instance, in place</td></tr>
+      <tr><td>BLUEPRINT</td><td>Instances <em>contain</em> its text rather than reference it.</td><td>future copies only</td></tr>
+      <tr><td>INSTANCE</td><td>It has a name an outsider recognizes — a market, a client, a product.</td><td>nothing; it is a leaf</td></tr>
+      <tr><td>SLOT</td><td>A named field inside an instance, same job in every instance.</td><td>every instance, now and later</td></tr>
+      <tr><td>MARKER</td><td>A value the machinery branches on. Signal, not content.</td><td>whatever branches on it</td></tr>
+      <tr><td>INSTRUCTION</td><td>It directs a human. Delete it and no run changes.</td><td>one reader, once</td></tr>
+      <tr><td>SURFACE</td><td>Someone who never opened the folder can encounter it.</td><td>outsiders, after publish</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section id="state"><div class="wrap">
+  <h2>State is a second axis, and appearance never decides it.</h2>
+  <p class="lede">Type says what a thing is. <b>LIVE / LEFTOVER / GHOST</b> says whether it is still
+  alive — and no verdict ships without the command, path or status code that decided it.</p>
+  <div class="two">
+    <div class="panel">
+      <div class="k">the inversion rule</div>
+      <h4>Look for who reads it first.</h4>
+      <p style="font-size:.93rem;color:var(--ink2)">Big, current, well-written, and nothing reads
+      it. Four lines the machinery branches on. A folder full of real data that the machinery never
+      resolves into. Recent edits are evidence about an author, never about a reader.</p>
+    </div>
+    <div class="panel">
+      <div class="k">evidence, in the same line</div>
+      <h4>Or the verdict is UNVERIFIED.</h4>
+      <p style="font-size:.93rem;color:var(--ink2)">A command and its output, a <code>file:line</code>,
+      a status code, a byte count, a commit SHA. Not “appears unused”, not “looks legacy”. An honest
+      gap is a map entry; a guess is a defect.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="walks"><div class="wrap">
+  <h2>Two walks, kept apart.</h2>
+  <p class="lede">They run in opposite directions and conflating them is the failure mode: a reading
+  step inside a map-making pass writes cards before the collision pass; a map-making step inside a
+  read turns a two-hop answer into a tour.</p>
+  <div class="two">
+    <div class="panel">
+      <div class="k">walk a — making the map</div>
+      <h4>Cards are step seven.</h4>
+      <ol class="steps">
+        <li>Enumerate — never guess a filename</li>
+        <li>Find the repeating unit</li>
+        <li>Classify by type</li>
+        <li>Mark state, with evidence</li>
+        <li>Collision pass</li>
+        <li>Trace propagation: copy or reference</li>
+        <li>Cards, last</li>
+      </ol>
+      <p class="stop">Done when the checks pass.</p>
+    </div>
+    <div class="panel">
+      <div class="k">walk b — reading the map</div>
+      <h4>Most reads stop at two.</h4>
+      <ol class="steps">
+        <li>Catalog</li>
+        <li>One card</li>
+        <li>Its Hits line — only if you are changing something</li>
+        <li>Stop</li>
+      </ol>
+      <p class="stop">Done when the question is answered.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="card"><div class="wrap">
+  <h2>What a card looks like.</h2>
+  <p class="lede">Eight lines, same order every time. This one is from the shipped worked example — a
+  live instruction pointing at a path that has never existed.</p>
+  <div class="card">
+    <div class="hd">
+      <b>06 · The Contributor Path</b>
+      <span class="pill">instruction</span>
+      <span class="pill live">live</span>
+      <span class="pill ghost">→ aims at a ghost</span>
+    </div>
+    <dl>
+      <dt>Evidence</dt><dd>Nothing under <code>specialist/</code> reads it; delete it and no run
+        changes. Its line 12 names <code>case-studies/[slug]/README.md</code>, and
+        <code>git ls-tree -r --name-only origin/main | grep …</code> returns nothing — confirmed on
+        origin, not just in a clone.</dd>
+      <dt>What it is</dt><dd>The door for the next contributed market.</dd>
+      <dt>Source path</dt><dd><code>CONTRIBUTING.md</code></dd>
+      <dt>Hits</dt><dd>The next contributor, once, at fork time. No run, no answer, no build.</dd>
+      <dt>Does not hit</dt><dd>The four existing case studies — the thing a reader reaches for first
+        and wrongly. They agree with each other and disagree only with the sentence. Four
+        contributions passed through this instruction and none followed it, which is the evidence
+        that the sentence is the defect.</dd>
+      <dt>Done when</dt><dd>You have the real path from <code>find</code>, not from the instruction,
+        and you have written the ghost down rather than closed it.</dd>
+    </dl>
+  </div>
+  <h3>the hardest line is “does not hit”</h3>
+  <p style="max-width:66ch;color:var(--ink2);font-size:.95rem;margin:0">It must name the noun a reader
+  reaches for <em>first and wrongly</em>, and it must be mildly surprising. If you cannot name a
+  plausible wrong reach, the card does not get written — that check alone deletes most of the cards a
+  model would otherwise produce.</p>
+</div></section>
+
+<section id="proof"><div class="wrap">
+  <h2>Two refusals. One of them runs.</h2>
+  <p class="lede"><b>No photocopy</b> — three checks, all executable, plus the precedence line: if a
+  card and the file disagree, the file wins and the card is wrong. <b>No slurping</b> — answering
+  costs a catalog and one card; when mapping, you enumerate paths and sizes before opening anything.</p>
+  <pre>$ python3 reference/checks/refusal-checks.py \
+      --map reference/worked-example --territory ./your-market-realtor
+
+card                           bytes    A cites  A       B       C       D
+--------------------------------------------------------------------------------
+01-the-engine.md                1940      86102  <i>pass</i>    <i>pass</i>    <i>pass</i>    <i>pass</i>
+02-the-region-blueprint.md      2004      13454  <i>pass</i>    <i>pass</i>    <i>pass</i>    <i>pass</i>
+03-a-market.md                  1847     139686  <i>pass</i>    <i>pass</i>    <i>pass</i>    <i>pass</i>
+04-the-six-slots.md             2354      13454  <i>pass</i>    <i>pass</i>    <i>pass</i>    <i>pass</i>
+05-the-marker-set.md            2057       5554  <i>pass</i>    <i>pass</i>    <i>pass</i>    <i>pass</i>
+06-the-contributor-path.md      1805       3101  <i>pass</i>    <i>pass</i>    <i>pass</i>    <i>pass</i>
+07-the-public-surface.md        2002     171963  <i>pass</i>    <i>pass</i>    <i>pass</i>    <i>pass</i>
+--------------------------------------------------------------------------------
+
+<i>PASSED</i> — every card is smaller than what it cites, shares no verbatim run over 200
+characters with it, cites at least one path that resolves, and carries Hits, Does not
+hit and Done when.</pre>
+  <p style="max-width:66ch;color:var(--ink2);font-size:.93rem;margin:1.1rem 0 0"><b>A</b> smaller
+  than what it cites · <b>B</b> no verbatim run over 200 characters · <b>C</b> cites a path that
+  resolves · <b>D</b> carries Hits, Does not hit, Done when.</p>
+  <h3>and it fails when it should — the same script on two deliberately bad cards</h3>
+  <pre>08-photocopy.md                 1614       1465  <b>FAIL</b>    <b>FAIL</b>    pass    <b>FAIL</b>
+09-nopaths.md                    115          0  <b>FAIL</b>    pass    <b>FAIL</b>    <b>FAIL</b>
+
+<b>FAILED</b> — 6 finding(s):
+  · 08-photocopy.md: 1614 B card &gt;= 1465 B cited (specialist/reference/region/glossary.md)
+  · 08-photocopy.md: 200+ char run shared with specialist/reference/region/glossary.md
+  · 08-photocopy.md: missing required line(s): Does not hit, Done when
+  · 09-nopaths.md: no **Source path:** line
+  · 09-nopaths.md: cites no path that resolves in the territory
+  · 09-nopaths.md: missing required line(s): Does not hit, Done when</pre>
+</div></section>
+
+<section><div class="wrap">
+  <h2>The worked example maps a real repository.</h2>
+  <p class="lede">One specialist engine, one region blueprint copied into four populated markets, a
+  public site. Seven cards, and the ceiling was reached — everything else is one line in the notes
+  with the test it failed.</p>
+  <div class="nums">
+    <div><span>62</span><small>files enumerated</small></div>
+    <div><span>7</span><small>cards, the ceiling</small></div>
+    <div><span>2</span><small>hops to an answer</small></div>
+    <div><span>1</span><small>ghost, left open</small></div>
+  </div>
+  <h3>the cold run ships with it</h3>
+  <p style="max-width:68ch;color:var(--ink2);font-size:.95rem">A fresh session with no memory and no
+  coaching was asked <em>“What is Services?”</em> — it opened one card, answered with the collision,
+  the routing row and a counting defect the repo did not know it had, and stopped. The transcript is
+  in the repo, including the run before it, which found the map's own door missing and is the reason
+  the door exists.</p>
+  <h3>proof from users</h3>
+  <!-- TODO: operator — real quotes / adoption only. No invented testimonials, no engagement metrics. -->
+  <p style="color:var(--ink3);font-size:.92rem;margin:0">Nothing here yet. This build ships with its
+  own gate output instead of borrowed praise.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2>What it refuses to map.</h2>
+  <ul class="plain">
+    <li><span class="no">01</span><b>A pile of one-offs.</b> No repeating shape, so every card would
+      be a summary. <code>ls -lt</code> is cheaper and tells you more.</li>
+    <li><span class="no">02</span><b>A single application where every file is unique.</b> Nothing is
+      copied, so nothing propagates. That wants a call graph.</li>
+    <li><span class="no">03</span><b>The methodology itself</b> — a folder system about folder
+      systems, this repo included. Mapping a method with the method returns a mirror.</li>
+    <li><span class="no">04</span><b>Anything it found broken.</b> It marks the ghost and leaves it.
+      A map that edits its territory while drawing it is a map of something that no longer
+      exists.</li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap">
+  <a href="https://github.com/NFTYoginis/map-my-folder">Repository</a>
+  <a href="https://github.com/NFTYoginis/map-my-folder/blob/main/reference/worked-example/CATALOG.md">The worked map</a>
+  <a href="https://github.com/NFTYoginis/map-my-folder/blob/main/LICENSE">MIT</a>
+  <span class="by">By Gabe — Your AI Specialist</span>
+</div></footer>
+
+</body>
+</html>
